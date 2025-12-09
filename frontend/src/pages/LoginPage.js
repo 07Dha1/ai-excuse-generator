@@ -14,7 +14,7 @@ const LoginPage = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(true);                              // 🔹 show loader
+    setLoading(true);                              // show loader
 
     try {
       const { data } = await API.post("/auth/login", { email, password });
@@ -26,13 +26,13 @@ const LoginPage = () => {
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
-      setLoading(false);                           // 🔹 hide loader
+      setLoading(false);                           // hide loader
     }
   };
 
   return (
     <>
-      {loading && <FullScreenLoader />}            {/* 🔹 loader overlay */}
+      {loading && <FullScreenLoader />}            {/* loader overlay */}
 
       <div className="auth-page">
         <div className="auth-card">
