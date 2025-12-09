@@ -1,35 +1,41 @@
-import "./Footer.css";
+// frontend/src/components/Footer.js
+import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="footer">
-      <div className="footer-left">
-        <h2>🧠 AI Excuse Generator</h2>
-        <p className="tagline">Smart excuses powered by AI — built for fun, innovation & real-world automation 🔥</p>
+    <footer className="app-footer">
+      <p className="footer-title">
+        🧠 AI Excuse Generator &nbsp;•&nbsp; Smart excuses, professional outputs.
+      </p>
+
+      <div className="footer-links">
+        {/* GitHub Repo */}
+        <a
+          href="https://github.com/07Dha1/ai-excuse-generator"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          View Source on GitHub
+        </a>
+
+        {/* Portfolio or LinkedIn – update URL to your own */}
+        <a
+          href="https://www.linkedin.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Connect on LinkedIn
+        </a>
+
+        {/* Contact / Email – update to your actual email or contact page */}
+        <a href="mailto:you@example.com">
+          Contact Support
+        </a>
       </div>
 
-      <div className="footer-center">
-        <p className="built-with">🔧 Built with</p>
-        <div className="tech-stack">
-          <span>React ⚛️</span>
-          <span>Node.js 🟢</span>
-          <span>Express 🚀</span>
-          <span>MongoDB 🍃</span>
-        </div>
-      </div>
-
-      <div className="footer-right">
-        <p className="connect-title">🌐 Connect</p>
-        <div className="social-links">
-          <a href="https://github.com/07Dha1" target="_blank">GitHub</a>
-          <a href="https://www.linkedin.com/in/sai-dhawan-80a22321a/" target="_blank">LinkedIn</a>
-          <a href="#" target="_blank">Portfolio</a>
-        </div>
-      </div>
-
-      <div className="footer-bottom">
-        © {new Date().getFullYear()} AI Excuse Generator — All Rights Reserved.
-      </div>
+      <p className="footer-copy">
+        © {new Date().getFullYear()} AI Excuse Generator. All rights reserved.
+      </p>
     </footer>
   );
 };
