@@ -1,16 +1,14 @@
-// frontend/src/api.js
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api"
+  baseURL: import.meta.env.VITE_API_URL,   // for Vite
 });
 
-API.interceptors.request.use((config) => {
+// Attach token for protected routes
+API.interceptors.request.use((req) => {
   const token = localStorage.getItem("excuse_token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+  if (token) req.headers.Authorization = `Bearer ${token}`;
+  return req;
 });
 
 export default API;
