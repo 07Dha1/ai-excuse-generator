@@ -1,13 +1,15 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://ai-excuse-generator-j2se.onrender.com",   // for Vite
+  baseURL: process.env.REACT_APP_API_URL,
 });
 
 // Attach token for protected routes
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem("excuse_token");
-  if (token) req.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    req.headers.Authorization = `Bearer ${token}`;
+  }
   return req;
 });
 
