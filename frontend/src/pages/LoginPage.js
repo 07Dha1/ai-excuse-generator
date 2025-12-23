@@ -17,7 +17,7 @@ const LoginPage = () => {
     setLoading(true);                              // show loader
 
     try {
-      const { data } = await API.post("/auth/login", { email, password });
+      const { data } = await API.post("/api/auth/login", { email, password });
 
       localStorage.setItem("excuse_token", data.token);
       localStorage.setItem("excuse_user", JSON.stringify(data));

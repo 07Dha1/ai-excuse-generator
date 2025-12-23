@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,   // for Vite
+  baseURL: "https://ai-excuse-generator-j2se.onrender.com",   // for Vite
 });
 
 // Attach token for protected routes
