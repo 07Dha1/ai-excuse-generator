@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+  REACT_APP_API_URL = https://ai-excuse-generator-j2se.onrender.com,
 });
 
 API.interceptors.request.use((req) => {
