@@ -16,7 +16,7 @@ const DashboardPage = () => {
   const [ratingValue, setRatingValue] = useState(4);
   const [loading, setLoading] = useState(false);
 
-  /* ================= API CALLS ================= */
+  /* ================= API ================= */
 
   const fetchPrediction = async () => {
     try {
@@ -42,7 +42,6 @@ const DashboardPage = () => {
 
       setCurrentExcuse(data.excuse);
 
-      /* Enhanced professional proof */
       setProof(
 `WORKPLACE ABSENCE CERTIFICATE
 
@@ -55,7 +54,7 @@ The situation required immediate personal attention and was beyond the individua
 
 The employee remains committed to professional responsibilities and will ensure completion of all pending tasks at the earliest opportunity.
 
-Issued on request for official record and submission.
+Issued on request for official record.
 
 Date of Issue: ${new Date().toLocaleString()}
 Authorized Signature: ______________________
@@ -78,8 +77,7 @@ Designation: ______________________`
   /* ================= ACTIONS ================= */
 
   const logout = () => {
-    localStorage.removeItem("excuse_token");
-    localStorage.removeItem("excuse_user");
+    localStorage.clear();
     navigate("/login");
   };
 
@@ -108,28 +106,11 @@ Designation: ______________________`
     alert("Proof email sent successfully");
   };
 
-  /* ================= PDF DOWNLOAD ================= */
-
   const downloadPDF = () => {
     const pdf = new jsPDF();
     pdf.setFont("Times", "Normal");
     pdf.setFontSize(11);
-
-    const content = `
-AI EXCUSE GENERATOR – OFFICIAL DOCUMENT
-
-Generated Excuse:
-"${currentExcuse?.text}"
-
-${proof}
-
-Apology:
-${apology}
-
-Generated on: ${new Date().toLocaleString()}
-    `;
-
-    pdf.text(content, 10, 15);
+    pdf.text(proof, 10, 15);
     pdf.save("Excuse_Proof.pdf");
   };
 
@@ -140,39 +121,28 @@ Generated on: ${new Date().toLocaleString()}
 
   return (
     <>
-      {/* ================= INLINE CSS ================= */}
       <style>{`
         body {
           margin: 0;
-          background: radial-gradient(circle at top, #111827, #050816);
+          background: radial-gradient(circle at top, #0f172a, #020617);
           color: #e5e7eb;
           font-family: Inter, system-ui, sans-serif;
         }
 
-        .dashboard {
-          display: grid;
-          grid-template-columns: 280px 1fr;
-          gap: 24px;
-          padding: 24px;
-          min-height: calc(100vh - 80px, );
-        }
-
-        /* HEADER */
         .topbar {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 16px;
+          padding: 20px 24px;
         }
 
         .logout {
           background: rgba(255,255,255,0.08);
-          border: 1px solid rgba(255,255,255,0.15);
+          border: 1px solid rgba(255,255,255,0.2);
           padding: 8px 16px;
           border-radius: 12px;
           cursor: pointer;
-          color: #fff;
-          transition: all 0.3s;
+          transition: all .3s;
         }
 
         .logout:hover {
@@ -180,7 +150,13 @@ Generated on: ${new Date().toLocaleString()}
           border-color: #ef4444;
         }
 
-        /* SIDEBAR */
+        .dashboard {
+          display: grid;
+          grid-template-columns: 280px 1fr;
+          gap: 24px;
+          padding: 24px;
+        }
+
         .sidebar {
           background: rgba(255,255,255,0.06);
           border-radius: 18px;
@@ -197,18 +173,19 @@ Generated on: ${new Date().toLocaleString()}
           background: transparent;
           color: #e5e7eb;
           cursor: pointer;
-          transition: all 0.25s ease;
+          transition: all .25s ease;
         }
 
         .sidebar button:hover {
+          background: rgba(255,255,255,0.12);
           transform: translateY(-2px);
-          background: rgba(255,255,255,0.1);
         }
 
         .sidebar .active {
           background: linear-gradient(135deg,#fbbf24,#f59e0b);
           color: #000;
           font-weight: 600;
+          box-shadow: 0 0 15px rgba(251,191,36,.5);
         }
 
         .primary {
@@ -217,7 +194,6 @@ Generated on: ${new Date().toLocaleString()}
           font-weight: 600;
         }
 
-        /* MAIN */
         .main {
           display: flex;
           flex-direction: column;
@@ -232,50 +208,32 @@ Generated on: ${new Date().toLocaleString()}
         }
 
         .hero {
-          border: 1px solid rgba(251,191,36,0.45);
+          border: 1px solid rgba(251,191,36,.45);
         }
 
-        .excuse {
-          font-size: 1.25rem;
+        .actions {
+          display: flex;
+          gap: 12px;
           margin: 14px 0;
+          flex-wrap: wrap;
         }
 
         .actions button {
-          margin-right: 10px;
           padding: 8px 14px;
           border-radius: 10px;
           border: 1px solid rgba(255,255,255,0.15);
           background: rgba(255,255,255,0.08);
-          color: #fff;
           cursor: pointer;
-          transition: all 0.25s;
+          transition: all .25s;
         }
 
         .actions button:hover {
           background: rgba(255,255,255,0.18);
+          transform: translateY(-1px);
         }
 
-        .rating {
-          display: flex;
-          gap: 12px;
-          align-items: center;
-          margin-top: 12px;
-        }
-
-        .grid {
-          display: grid;
-          grid-template-columns: repeat(3,1fr);
-          gap: 24px;
-        }
-
-        pre {
-          white-space: pre-wrap;
-          color: #9ca3af;
-        }
-
-        /* FOOTER */
         footer {
-          background: rgba(255,255,255,0.04);
+          background: radial-gradient(circle at top, #0f172a, #020617);
           border-top: 1px solid rgba(255,255,255,0.1);
           padding: 18px;
           text-align: center;
@@ -283,14 +241,12 @@ Generated on: ${new Date().toLocaleString()}
         }
       `}</style>
 
-      {/* ================= HEADER ================= */}
       <div className="topbar">
         <h2>🧠 AI Excuse Generator</h2>
-        <button className="logout" onClick={logout}>🚪 Logout</button>
+        <button className="logout" onClick={logout}>Logout</button>
       </div>
 
       <div className="dashboard">
-        {/* SIDEBAR */}
         <aside className="sidebar">
           <h3>⚙ Controls</h3>
 
@@ -317,12 +273,11 @@ Generated on: ${new Date().toLocaleString()}
           </button>
         </aside>
 
-        {/* MAIN */}
         <main className="main">
           {currentExcuse && (
             <section className="card hero">
               <h2>🎯 Generated Excuse</h2>
-              <p className="excuse">“{currentExcuse.text}”</p>
+              <p>“{currentExcuse.text}”</p>
 
               <div className="actions">
                 <button onClick={markFavorite}>⭐ Save</button>
@@ -338,7 +293,6 @@ Generated on: ${new Date().toLocaleString()}
                   value={ratingValue}
                   onChange={e => setRatingValue(e.target.value)}
                 />
-                <span>{ratingValue}/5</span>
                 <button onClick={rateExcuse}>Submit</button>
               </div>
 
@@ -346,23 +300,16 @@ Generated on: ${new Date().toLocaleString()}
             </section>
           )}
 
-          <section className="grid">
-            <div className="card">
-              <h3>📄 Proof</h3>
-              <pre>{proof}</pre>
-            </div>
+          <section className="card">
+            <h3>📄 Proof</h3>
+            <pre>{proof}</pre>
+          </section>
 
-            <div className="card">
-              <h3>🙏 Apology</h3>
-              <p>{apology}</p>
-              <h4>🔮 Prediction</h4>
-              <p>{prediction}</p>
-            </div>
-
-            <div className="card">
-              <h3>✉ Communication Templates</h3>
-              <p>Professional email & formal letter auto-generated</p>
-            </div>
+          <section className="card">
+            <h3>🙏 Apology</h3>
+            <p>{apology}</p>
+            <h4>🔮 Prediction</h4>
+            <p>{prediction}</p>
           </section>
         </main>
       </div>
