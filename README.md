@@ -109,12 +109,12 @@ JWT_SECRET=your_jwt_secret
 
 ----------------
 Local Setup
-----------------
+
 git clone https://github.com/07Dha1/ai-excuse-generator.git
 cd ai-excuse-generator
 
 
------------------
+
 Frontend Setup
 
 cd frontend
@@ -122,14 +122,14 @@ npm install
 npm start
 
 
------------------
+
 Backend Setup
 
 cd backend
 npm install
 npm run dev
 
------------------
+
 API Endpoints
 
 
