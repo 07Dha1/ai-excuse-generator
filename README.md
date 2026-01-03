@@ -116,7 +116,7 @@ cd ai-excuse-generator
 
 -----------------
 Frontend Setup
------------------
+
 cd frontend
 npm install
 npm start
@@ -124,14 +124,14 @@ npm start
 
 -----------------
 Backend Setup
------------------
+
 cd backend
 npm install
 npm run dev
 
 -----------------
 API Endpoints
------------------
+
 
 🔐 Authentication
 
