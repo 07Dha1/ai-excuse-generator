@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import API from "../api";
+import { useNavigate } from "react-router-dom";
 
 const DashboardPage = () => {
+  const navigate = useNavigate();
+
   const [prediction, setPrediction] = useState("");
   const [bestExcuse, setBestExcuse] = useState("");
   const [currentExcuse, setCurrentExcuse] = useState(null);
@@ -12,9 +15,6 @@ const DashboardPage = () => {
   const [urgency, setUrgency] = useState("Normal");
   const [ratingValue, setRatingValue] = useState(4);
   const [loading, setLoading] = useState(false);
-
-  const user =
-    JSON.parse(localStorage.getItem("excuse_user") || "{}") || {};
 
   /* ================= API CALLS ================= */
 
@@ -41,8 +41,30 @@ const DashboardPage = () => {
       });
 
       setCurrentExcuse(data.excuse);
-      setProof(data.proof);
-      setApology(data.apology);
+
+      /* Enhanced professional proof */
+      setProof(
+`WORKPLACE ABSENCE CERTIFICATE
+
+This is to formally certify that the employee was unable to attend official duties due to genuine and unavoidable circumstances.
+
+Reason for Absence:
+"${data.excuse.text}"
+
+The situation required immediate personal attention and was beyond the individual's control. This explanation is submitted in good faith and may be treated as an official justification for absence.
+
+The employee remains committed to professional responsibilities and will ensure completion of all pending tasks at the earliest opportunity.
+
+Issued on request for official record and submission.
+
+Date of Issue: ${new Date().toLocaleString()}
+Authorized Signature: ______________________
+Designation: ______________________`
+      );
+
+      setApology(
+"I sincerely apologize for the inconvenience caused by my absence. The circumstances were unavoidable, and I assure you that I remain fully committed to my responsibilities and will complete all pending work promptly."
+      );
 
       fetchPrediction();
       fetchBest();
@@ -53,13 +75,20 @@ const DashboardPage = () => {
     }
   };
 
+  /* ================= ACTIONS ================= */
+
+  const logout = () => {
+    localStorage.removeItem("excuse_token");
+    localStorage.removeItem("excuse_user");
+    navigate("/login");
+  };
+
   const markFavorite = async () => {
     if (!currentExcuse?._id) return;
     await API.post("/api/excuses/favorite", {
       excuseId: currentExcuse._id,
       favorite: true
     });
-    alert("Saved to favorites ⭐");
   };
 
   const rateExcuse = async () => {
@@ -69,7 +98,6 @@ const DashboardPage = () => {
       rating: ratingValue
     });
     fetchBest();
-    alert("Rating submitted ✅");
   };
 
   const sendProofEmail = async () => {
@@ -77,48 +105,32 @@ const DashboardPage = () => {
     await API.post("/api/excuses/send-proof-email", {
       excuseId: currentExcuse._id
     });
-    alert("Proof email sent 📧");
+    alert("Proof email sent successfully");
   };
 
   /* ================= PDF DOWNLOAD ================= */
 
-  const downloadProof = () => {
-    const doc = new jsPDF();
+  const downloadPDF = () => {
+    const pdf = new jsPDF();
+    pdf.setFont("Times", "Normal");
+    pdf.setFontSize(11);
 
-    doc.setFont("Times", "Normal");
-    doc.setFontSize(14);
-    doc.text("WORKPLACE ABSENCE CERTIFICATE", 105, 20, {
-      align: "center"
-    });
+    const content = `
+AI EXCUSE GENERATOR – OFFICIAL DOCUMENT
 
-    doc.setFontSize(11);
-    doc.text(
-      `This document is to formally certify that ${
-        user.name || "the individual"
-      } was unable to attend professional responsibilities due to genuine and unavoidable circumstances.
+Generated Excuse:
+"${currentExcuse?.text}"
 
 ${proof}
 
-This certificate is issued in good faith for official verification purposes.
+Apology:
+${apology}
 
-Issued on: ${new Date().toLocaleDateString()}
-`,
-      20,
-      40
-    );
+Generated on: ${new Date().toLocaleString()}
+    `;
 
-    doc.text("Authorized Signatory", 20, 250);
-    doc.text("AI Excuse Generator System", 20, 258);
-
-    doc.save("Excuse_Proof.pdf");
-  };
-
-  /* ================= LOGOUT ================= */
-
-  const logout = () => {
-    localStorage.removeItem("excuse_token");
-    localStorage.removeItem("excuse_user");
-    window.location.href = "/login";
+    pdf.text(content, 10, 15);
+    pdf.save("Excuse_Proof.pdf");
   };
 
   useEffect(() => {
@@ -126,11 +138,9 @@ Issued on: ${new Date().toLocaleDateString()}
     fetchBest();
   }, []);
 
-  /* ================= UI ================= */
-
   return (
     <>
-      {/* INLINE CSS */}
+      {/* ================= INLINE CSS ================= */}
       <style>{`
         body {
           margin: 0;
@@ -138,97 +148,168 @@ Issued on: ${new Date().toLocaleDateString()}
           color: #e5e7eb;
           font-family: Inter, system-ui, sans-serif;
         }
+
         .dashboard {
           display: grid;
           grid-template-columns: 280px 1fr;
           gap: 24px;
           padding: 24px;
-          min-height: 100vh;
+          min-height: calc(100vh - 80px, );
         }
-        .sidebar, .card {
+
+        /* HEADER */
+        .topbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 16px;
+        }
+
+        .logout {
+          background: rgba(255,255,255,0.08);
+          border: 1px solid rgba(255,255,255,0.15);
+          padding: 8px 16px;
+          border-radius: 12px;
+          cursor: pointer;
+          color: #fff;
+          transition: all 0.3s;
+        }
+
+        .logout:hover {
+          background: #ef4444;
+          border-color: #ef4444;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
           background: rgba(255,255,255,0.06);
-          border-radius: 16px;
+          border-radius: 18px;
           padding: 20px;
           border: 1px solid rgba(255,255,255,0.12);
         }
+
         .sidebar button {
           width: 100%;
-          margin-bottom: 8px;
-          padding: 10px;
-          border-radius: 10px;
-          border: 1px solid rgba(255,255,255,0.12);
+          margin-bottom: 10px;
+          padding: 12px;
+          border-radius: 14px;
+          border: 1px solid rgba(255,255,255,0.15);
           background: transparent;
           color: #e5e7eb;
           cursor: pointer;
+          transition: all 0.25s ease;
         }
-        .active {
-          border-color: #fbbf24;
+
+        .sidebar button:hover {
+          transform: translateY(-2px);
+          background: rgba(255,255,255,0.1);
         }
+
+        .sidebar .active {
+          background: linear-gradient(135deg,#fbbf24,#f59e0b);
+          color: #000;
+          font-weight: 600;
+        }
+
         .primary {
           background: linear-gradient(135deg,#fbbf24,#f59e0b);
           color: #000;
           font-weight: 600;
         }
+
+        /* MAIN */
         .main {
           display: flex;
           flex-direction: column;
           gap: 24px;
         }
-        .hero {
-          border: 1px solid rgba(251,191,36,0.4);
+
+        .card {
+          background: rgba(255,255,255,0.06);
+          border-radius: 18px;
+          padding: 20px;
+          border: 1px solid rgba(255,255,255,0.12);
         }
+
+        .hero {
+          border: 1px solid rgba(251,191,36,0.45);
+        }
+
         .excuse {
           font-size: 1.25rem;
-          margin: 12px 0;
+          margin: 14px 0;
         }
+
+        .actions button {
+          margin-right: 10px;
+          padding: 8px 14px;
+          border-radius: 10px;
+          border: 1px solid rgba(255,255,255,0.15);
+          background: rgba(255,255,255,0.08);
+          color: #fff;
+          cursor: pointer;
+          transition: all 0.25s;
+        }
+
+        .actions button:hover {
+          background: rgba(255,255,255,0.18);
+        }
+
         .rating {
           display: flex;
           gap: 12px;
           align-items: center;
           margin-top: 12px;
         }
+
         .grid {
           display: grid;
           grid-template-columns: repeat(3,1fr);
           gap: 24px;
         }
+
         pre {
           white-space: pre-wrap;
           color: #9ca3af;
         }
-        .topbar {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 10px;
+
+        /* FOOTER */
+        footer {
+          background: rgba(255,255,255,0.04);
+          border-top: 1px solid rgba(255,255,255,0.1);
+          padding: 18px;
+          text-align: center;
+          color: #9ca3af;
         }
       `}</style>
+
+      {/* ================= HEADER ================= */}
+      <div className="topbar">
+        <h2>🧠 AI Excuse Generator</h2>
+        <button className="logout" onClick={logout}>🚪 Logout</button>
+      </div>
 
       <div className="dashboard">
         {/* SIDEBAR */}
         <aside className="sidebar">
-          <h2>⚙ Controls</h2>
+          <h3>⚙ Controls</h3>
 
           <p>Scenario</p>
-          {["Work", "School", "Social", "Family"].map((s) => (
+          {["Work","School","Social","Family"].map(s => (
             <button
               key={s}
               className={scenario === s ? "active" : ""}
               onClick={() => setScenario(s)}
-            >
-              {s}
-            </button>
+            >{s}</button>
           ))}
 
           <p>Urgency</p>
-          {["Normal", "Urgent"].map((u) => (
+          {["Normal","Urgent"].map(u => (
             <button
               key={u}
               className={urgency === u ? "active" : ""}
               onClick={() => setUrgency(u)}
-            >
-              {u}
-            </button>
+            >{u}</button>
           ))}
 
           <button className="primary" onClick={generateExcuse}>
@@ -238,19 +319,16 @@ Issued on: ${new Date().toLocaleDateString()}
 
         {/* MAIN */}
         <main className="main">
-          <div className="topbar">
-            <h2>AI Excuse Generator</h2>
-            <button onClick={logout}>🚪 Logout</button>
-          </div>
-
           {currentExcuse && (
             <section className="card hero">
               <h2>🎯 Generated Excuse</h2>
               <p className="excuse">“{currentExcuse.text}”</p>
 
-              <button onClick={markFavorite}>⭐ Save</button>
-              <button onClick={downloadProof}>📄 Download Proof</button>
-              <button onClick={sendProofEmail}>📧 Email Proof</button>
+              <div className="actions">
+                <button onClick={markFavorite}>⭐ Save</button>
+                <button onClick={downloadPDF}>📄 Download PDF</button>
+                <button onClick={sendProofEmail}>📧 Email Proof</button>
+              </div>
 
               <div className="rating">
                 <input
@@ -258,13 +336,13 @@ Issued on: ${new Date().toLocaleDateString()}
                   min="1"
                   max="5"
                   value={ratingValue}
-                  onChange={(e) => setRatingValue(e.target.value)}
+                  onChange={e => setRatingValue(e.target.value)}
                 />
                 <span>{ratingValue}/5</span>
                 <button onClick={rateExcuse}>Submit</button>
               </div>
 
-              <p>🏆 Best Excuse: {bestExcuse}</p>
+              <p>🏆 Best Excuse: {bestExcuse || "No ratings yet."}</p>
             </section>
           )}
 
@@ -283,25 +361,15 @@ Issued on: ${new Date().toLocaleDateString()}
 
             <div className="card">
               <h3>✉ Communication Templates</h3>
-              <pre>
-{`Subject: Request for consideration regarding absence
-
-Dear Sir/Madam,
-
-I hope this message finds you well. I regret to inform you that I was unable to attend my duties due to unavoidable personal circumstances.
-
-The situation required my immediate attention and was beyond my control. I sincerely apologize for the inconvenience caused.
-
-I assure you that I will complete all pending responsibilities at the earliest.
-
-Yours sincerely,
-${user.name || "Employee"}
-`}
-              </pre>
+              <p>Professional email & formal letter auto-generated</p>
             </div>
           </section>
         </main>
       </div>
+
+      <footer>
+        © {new Date().getFullYear()} AI Excuse Generator. All rights reserved.
+      </footer>
     </>
   );
 };
