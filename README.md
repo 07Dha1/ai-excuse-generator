@@ -32,6 +32,6 @@ This project demonstrates **end-to-end full-stack skills** including authenticat
 
 ## 🚀 Live Demo
 
-> 🔗 **Live Website:** 👉 https://ai-excuse-generator-1mux-8b9wrm3pd-dhawans-projects.vercel.app/ 
+> 🔗 **Live Website:** 👉 https://ai-excuse-generator-sigma.vercel.app/
 > 🔗 **Backend API:** 👉 https://ai-excuse-generator-j2se.onrender.com
 
